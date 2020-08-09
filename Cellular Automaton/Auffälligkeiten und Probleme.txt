@@ -1,0 +1,46 @@
+Bemerkungen zum CA-C-Code:
+-Betrachtung der Ecken->ich bin mir nicht sicher, aber ich glaube im Original-C-Code werden die Ecken (z.B.:(0,0)) beim boundary nicht überschrieben, ich erwarte daher keine Übereinstimmung im Ergebniss
+--zum Vergleich eventuell Nachbauen(Nachtrag: Die von Frau Vogel erhaltenen Datei enthällt 2 weitere Versionen(seq und par) vom CA. Beide mit zum original abweichenden boundary.)
+
+Bemerkungen zum CA-Julia-Code:
+-mögliche Probleme bei kleinen Feldern: bei Threads < lines < Threads^2 kann es sein, dass der oder gar die letzten Threads leer bleiben, was nicht berücksichtigt wird
+--ggf. bei der Berechnung der Zeilen pro Thread vorher abfangen
+-der Dreieckstausch temp = from, from = to, to = temp entfällt erst einmal, ggf. kann man prüfen ob man auch den Julia-Code auf Pointer umstellt und dann wieder einbaut
+
+Probleme mit Julia:
+-abweichende Regeln für Berechnungen z.B.: in C Int/Int -> Int in Julia Int/Int ->Float
+-teilweise starke Veränderungen in den Befehlen bei den Versionswechseln, ältere Tutorials und Lösungsvorschläge sind daher oft nicht in aktueller Version umsetzbar und können in Sackgassen führen()
+-Angabe experimentell in den Dokumentationen
+-was in der Konsole funktioniert geht auch in einer Quellcodedatei, aber nicht immer in einer Funktion
+-Zugriff auf globale Variablen innerhalb einer Schleife oder einer Funktion nicht wie erwartet
+Beispiel 1:
+anzeige = 0
+for j in 1:2
+println(anzeige)
+end
+liefert
+0
+0
+
+Beispiel 2:
+zähler = 0
+for j in 1:2
+zähler = zähler + 1
+end
+liefert einen Fehler
+
+Besonderheiten beim Programmieren
+
+-Wie bei anderen Progammiersprachen auch, muss man eine Funktion die man starten möchte erst "definieren" bevor man diese starten kann.
+Beispiel:
+
+function foo()
+   #foo-Quellcode
+end
+
+foo()
+
+Dies führt dazu das man den Teil des Quellcodes der alles andere steuert nach unten verlegt.
+
+Aber: Mit Distributed wird eine Bibliotek eingeführt die parallel Funktionen ermöglicht. Hier ist es aber wichtig zuerst anzugeben wieviele "Treads" man später nutzten möchte und dann die Variablen und Funktionen
+mit @everywhere zu definieren. Somit ist es nötig den Steuerquellcode aufzuteilen.
